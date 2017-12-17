@@ -1,4 +1,5 @@
 'use strict';
+var path = require('path');
 
 module.exports = function(app) {
 	var aimos = require('../controllers/aimosController');
@@ -14,4 +15,8 @@ module.exports = function(app) {
 	app.route('/message/:messageId')
 	.get(aimos.message_get)
 	.delete(aimos.message_remove);
+
+	app.route('/chat').get(function(req, res){
+		res.sendFile(path.resolve('./public/chat.html'));
+	});
 };

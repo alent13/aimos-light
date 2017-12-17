@@ -11,6 +11,10 @@ var UserSchema = new Schema({
   },
   firstName : String,
   lastName : String,
+  socketToken: {
+    type: String,
+    default: ""
+  },
   passwordHash : String,
   createdDate: {
     type: Date,

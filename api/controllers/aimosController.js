@@ -5,6 +5,7 @@ const saltRounds = 10;
 var mongoose = require('mongoose'),
 User = mongoose.model('User'),
 Message = mongoose.model('Message');
+const uuidv4 = require('uuid/v4');
 
 exports.user_auth = function(req, res) {
   if (!req.body.username) {
@@ -20,10 +21,12 @@ exports.user_auth = function(req, res) {
     if (docs.length){
       bcrypt.compare(req.body.password, docs[0].passwordHash, function(err, isPasswordCorrect) {
         if (isPasswordCorrect == true) {
+          docs[0].set({ token: uuidv4() });
           var user = {
             username: docs[0].username,
             firstName: docs[0].firstName,
             lastName: docs[0].lastName,
+            token: docs[0].token,
           }
           res.send(user)
         } else {
@@ -57,6 +60,7 @@ exports.user_registration = function(req, res) {
           username: req.body.username, 
           passwordHash: hash,
           firstName : req.body.firstName,
+          token : uuidv4(),
           lastName : req.body.lastName,
         });
         newUser.save(function(err){
@@ -67,6 +71,7 @@ exports.user_registration = function(req, res) {
             var user = {
               username: newUser.username,
               firstName: newUser.firstName,
+              token: token,
               lastName: newUser.lastName,
             }
             res.json(user);
