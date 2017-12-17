@@ -11,7 +11,7 @@ var UserSchema = new Schema({
   },
   firstName : String,
   lastName : String,
-  socketToken: {
+  token: {
     type: String,
     default: ""
   },
