@@ -1,51 +1,86 @@
 'use strict';
 
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
 var mongoose = require('mongoose'),
-  Task = mongoose.model('Tasks');
+User = mongoose.model('User'),
+Message = mongoose.model('Message');
 
-
-
-exports.list_all_tasks = function(req, res) {
-  Task.find({}, function(err, task) {
-    if (err)
+exports.user_auth = function(req, res) {
+  if (!req.body.username) {
+    res.send('Username required')
+  }
+  if (!req.body.password) {
+    res.send('Password required')
+  }
+  User.find({username : req.body.username}, function (err, docs) {
+    if (err) {
       res.send(err);
-    res.json(task);
+    }
+    if (docs.length){
+      bcrypt.compare(req.body.password, docs[0].passwordHash, function(err, isPasswordCorrect) {
+        if (isPasswordCorrect == true) {
+          var user = {
+            username: docs[0].username,
+            firstName: docs[0].firstName,
+            lastName: docs[0].lastName,
+          }
+          res.send(user)
+        } else {
+          res.send("Password is not correct")
+        }
+      });
+    }else{
+      res.send('Username does not exist');
+    }
   });
 };
 
+exports.user_registration = function(req, res) {
+  if (!req.body.username) {
+    res.send('Username required')
+  }
+  if (!req.body.password) {
+    res.send('Password required')
+  }
 
-exports.create_a_task = function(req, res) {
-  var new_task = new Task(req.body);
-  new_task.save(function(err, task) {
-    if (err)
+  User.find({username : req.body.username}, function (err, docs) {
+    if (err) {
       res.send(err);
-    res.json(task);
+    }
+    if (docs.length){
+      res.send('Username already exists');
+    }else{
+      bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+        var newUser = new User(
+        {
+          username: req.body.username, 
+          passwordHash: hash,
+          firstName : req.body.firstName,
+          lastName : req.body.lastName,
+        });
+        newUser.save(function(err){
+          if (err) {
+            res.send(err);
+          } else {
+            delete newUser['passwordHash']
+            var user = {
+              username: newUser.username,
+              firstName: newUser.firstName,
+              lastName: newUser.lastName,
+            }
+            res.json(user);
+          }
+        });
+      });
+    }
   });
 };
 
-exports.read_a_task = function(req, res) {
-  Task.findById(req.params.taskId, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
+exports.message_get = function(req, res) {
+
 };
 
-exports.update_a_task = function(req, res) {
-  Task.findOneAndUpdate({_id:req.params.taskId}, req.body, {new: true}, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json(task);
-  });
-};
-// Task.remove({}).exec(function(){});
-exports.delete_a_task = function(req, res) {
+exports.message_remove = function(req, res) {
 
-  Task.remove({
-    _id: req.params.taskId
-  }, function(err, task) {
-    if (err)
-      res.send(err);
-    res.json({ message: 'Task successfully deleted' });
-  });
 };

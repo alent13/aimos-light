@@ -1,7 +1,7 @@
 {
-  "name": "todolistapi",
+  "name": "aimos-light",
   "version": "1.0.0",
-  "description": "RESTful todoListApi",
+  "description": "RESTful aimos-light API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,25 +9,23 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/generalgmt/RESTfulAPITutorial.git"
+    "url": "git+https://github.com/alent13/aimos-light.git"
   },
   "keywords": [
     "RESTful",
     "API",
-    "Tutorial"
+    "Aimos"
   ],
-  "author": "olatunde garuba",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/generalgmt/RESTfulAPITutorial/issues"
-  },
-  "homepage": "https://github.com/generalgmt/RESTfulAPITutorial#readme",
+  "author": "Vlad Lebedev",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/alent13/aimos-light/blob/master/README.md",
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "nodemon": "^1.13.3"
   },
   "dependencies": {
-    "body-parser": "^1.15.2",
-    "express": "^4.14.0",
-    "mongoose": "^4.7.2"
+    "bcrypt": "^1.0.3",
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "mongoose": "^4.13.7"
   }
 }
