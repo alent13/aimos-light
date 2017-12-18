@@ -71,6 +71,7 @@ io.on('connection', function (socket) {
         numUsers++;
         socket.isUserAuth = true;
         socket.username = userRecord.username;
+        console.log('on user auth find username - ' + userRecord.username)
         MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
           console.log('on user auth message err - ' + err)
           console.log('on user auth message find - ' + JSON.stringify(messages))

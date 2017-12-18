@@ -92,7 +92,6 @@ const uuidv4 = require('uuid/v4');
             if (err) {
               res.status(405).send(err);
             } else {
-              delete newUser['passwordHash']
               var user = {
                 username: newUser.username,
                 firstName: newUser.firstName,
@@ -104,6 +103,7 @@ const uuidv4 = require('uuid/v4');
           });
         });
       }
+      res.status(405).send("Black hole, again");
     });
   };
 
