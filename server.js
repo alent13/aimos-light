@@ -48,7 +48,7 @@ io.on('connection', function (socket) {
   socket.on('user auth', function (data) {
     console.log('on user auth - ' + JSON.stringify(data))
     if (socket.isUserAuth) {
-      MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+      MessageModel.find({}).sort('date').limit(10).exec(function (err, messages) {
         var messageList = messages.map(function(messageRecord) {
           return {
             text: messageRecord.text,
