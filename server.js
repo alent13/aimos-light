@@ -48,7 +48,7 @@ io.on('connection', function (socket) {
   socket.on('user auth', function (data) {
     console.log('on user auth - ' + JSON.stringify(data))
     if (socket.isUserAuth) {
-      UserModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+      MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
         var messageList = messages.map(function(messageRecord) {
           return {
             text: messageRecord.text,
@@ -62,17 +62,18 @@ io.on('connection', function (socket) {
         });
       });
     } else {
-      if (!token) {
-        socket.emit('auth failed', "Token required");
-      }
-      UserModel.find({token : data.token}, function (err, docs) {
+      UserModel.findOne({token : data}, function (err, userRecord) {
         if (err) {
+          console.log('on user auth find error - ' + err)
           socket.emit('auth failed', err);
         }
+        console.log('on user auth find - ' + JSON.stringify(userRecord))
         numUsers++;
         socket.isUserAuth = true;
-        socket.username = docs[0].username;
-        UserModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+        socket.username = userRecord.username;
+        MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+          console.log('on user auth message err - ' + err)
+          console.log('on user auth message find - ' + JSON.stringify(messages))
           var messageList = messages.map(function(messageRecord) {
             return {
               text: messageRecord.text,
@@ -80,6 +81,7 @@ io.on('connection', function (socket) {
               datetime: messageRecord.datetime,
             };
           });
+          console.log('on user auth message find list - ' + JSON.stringify(messageList))
           socket.emit('auth success', {
             numUsers: numUsers,
             messageList: messageList,
@@ -95,7 +97,7 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     console.log('on disconnect')
-    if (addedUser) {
+    if (socket.isUserAuth) {
       --numUsers;
 
       // echo globally that this client has left
