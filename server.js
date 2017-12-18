@@ -43,12 +43,11 @@ var numUsers = 0;
 io.on('connection', function (socket) {
   console.log('on connection')
 
-  isUserAuth = false;
-  username = "";
+  socket.isUserAuth = false;
 
   socket.on('user auth', function (data) {
     console.log('on user auth - ' + JSON.stringify(data))
-    if (isUserAuth) {
+    if (socket.isUserAuth) {
       MessageModel.find({}).sort({date: 'asc'}).limit(10).exec(function (err, messages) {
         var messageList = messages.map(function(messageRecord) {
           return {
@@ -70,8 +69,8 @@ io.on('connection', function (socket) {
         }
         console.log('on user auth find - ' + JSON.stringify(userRecord))
         numUsers++;
-        isUserAuth = true;
-        username = userRecord.username;
+        socket.isUserAuth = true;
+        socket.username = userRecord.username;
         console.log('on user auth find username - ' + userRecord.username)
         MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
           console.log('on user auth message err - ' + err)
@@ -90,7 +89,7 @@ io.on('connection', function (socket) {
           });
         });
         socket.broadcast.emit('user joined', {
-          username: username,
+          username: socket.username,
           numUsers: numUsers
         });
       });
@@ -99,12 +98,12 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     console.log('on disconnect')
-    if (isUserAuth) {
+    if (socket.isUserAuth) {
       --numUsers;
 
       // echo globally that this client has left
       socket.broadcast.emit('user left', {
-        username: username,
+        username: socket.username,
         numUsers: numUsers
       });
     }
@@ -114,7 +113,7 @@ io.on('connection', function (socket) {
     console.log('on new message - ' + JSON.stringify(data))
     var message = new MessageModel(
     {
-      sender: username,
+      sender: socket.username,
       text: data,
     });
     message.save(function(err){
@@ -123,7 +122,7 @@ io.on('connection', function (socket) {
       } else {
         socket.broadcast.emit('new message', {
           text: message.text,
-          sender: username,
+          sender: socket.username,
           datetime: message.datetime,
         });
         socket.emit('new message success', {
