@@ -9,6 +9,7 @@ var Message = require('./api/models/aimosMessageModel');
 var bodyParser = require('body-parser');
 
 MessageModel = mongoose.model('Message');
+UserModel = mongoose.model('User');
 
 mongoose.Promise = global.Promise;
 mongoose.connect('mongodb://api:toor@ds159676.mlab.com:59676/heroku_8wqpw17m', { useMongoClient: true });
@@ -40,24 +41,50 @@ http.listen(port, function(){
 var numUsers = 0;
 
 io.on('connection', function (socket) {
+  console.log('on connection')
 
   socket.isUserAuth = false;
 
   socket.on('user auth', function (data) {
+    console.log('on user auth - ' + JSON.stringify(data))
     if (socket.isUserAuth) {
-      socket.emit('auth success', "success");
+      UserModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+        var messageList = messages.map(function(messageRecord) {
+          return {
+            text: messageRecord.text,
+            sender: messageRecord.sender,
+            datetime: messageRecord.datetime,
+          };
+        });
+        socket.emit('auth success', {
+          numUsers: numUsers,
+          messageList,
+        });
+      });
     } else {
       if (!token) {
         socket.emit('auth failed', "Token required");
       }
-      User.find({token : data.token}, function (err, docs) {
+      UserModel.find({token : data.token}, function (err, docs) {
         if (err) {
           socket.emit('auth failed', err);
         }
         numUsers++;
         socket.isUserAuth = true;
         socket.username = docs[0].username;
-        socket.emit('auth success', "success");
+        UserModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+          var messageList = messages.map(function(messageRecord) {
+            return {
+              text: messageRecord.text,
+              sender: messageRecord.sender,
+              datetime: messageRecord.datetime,
+            };
+          });
+          socket.emit('auth success', {
+            numUsers: numUsers,
+            messageList: messageList,
+          });
+        });
         socket.broadcast.emit('user joined', {
           username: socket.username,
           numUsers: numUsers
@@ -67,6 +94,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function () {
+    console.log('on disconnect')
     if (addedUser) {
       --numUsers;
 
@@ -79,6 +107,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('new message', function (data) {
+    console.log('on new message - ' + JSON.stringify(data))
     var message = new MessageModel(
     {
       sender: socket.username,
@@ -89,12 +118,14 @@ io.on('connection', function (socket) {
         socket.broadcast.emit('new message failed');
       } else {
         socket.broadcast.emit('new message', {
-          username: socket.username,
-          message: data
+          text: message.text,
+          sender: socket.username,
+          datetime: message.datetime,
         });
         socket.emit('new message success', {
-          username: socket.username,
-          message: data
+          sender: message.username,
+          text: message.text,
+          datetime: message.datetime,
         });
       }
     });
