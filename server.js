@@ -40,14 +40,15 @@ http.listen(port, function(){
 
 var numUsers = 0;
 
+var usersData = {};
 io.on('connection', function (socket) {
   console.log('on connection')
 
-  socket.isUserAuth = false;
+  usersData[socket.id].isUserAuth = false;
 
   socket.on('user auth', function (data) {
     console.log('on user auth - ' + JSON.stringify(data))
-    if (socket.isUserAuth) {
+    if (usersData[socket.id].isUserAuth) {
       MessageModel.find({}).sort({date: 'asc'}).limit(10).exec(function (err, messages) {
         var messageList = messages.map(function(messageRecord) {
           return {
@@ -69,8 +70,8 @@ io.on('connection', function (socket) {
         }
         console.log('on user auth find - ' + JSON.stringify(userRecord))
         numUsers++;
-        socket.isUserAuth = true;
-        socket.username = userRecord.username;
+        usersData[socket.id].isUserAuth = true;
+        usersData[socket.id].username = userRecord.username;
         console.log('on user auth find username - ' + userRecord.username)
         MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
           console.log('on user auth message err - ' + err)
@@ -89,7 +90,7 @@ io.on('connection', function (socket) {
           });
         });
         socket.broadcast.emit('user joined', {
-          username: socket.username,
+          username: usersData[socket.id].username,
           numUsers: numUsers
         });
       });
@@ -98,12 +99,13 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     console.log('on disconnect')
-    if (socket.isUserAuth) {
+    if (usersData[socket.id].isUserAuth) {
+      delete usersData[socket.id];
       --numUsers;
 
       // echo globally that this client has left
       socket.broadcast.emit('user left', {
-        username: socket.username,
+        username: usersData[socket.id].username,
         numUsers: numUsers
       });
     }
@@ -113,7 +115,7 @@ io.on('connection', function (socket) {
     console.log('on new message - ' + JSON.stringify(data))
     var message = new MessageModel(
     {
-      sender: socket.username,
+      sender: usersData[socket.id].username,
       text: data,
     });
     message.save(function(err){
@@ -122,7 +124,7 @@ io.on('connection', function (socket) {
       } else {
         socket.broadcast.emit('new message', {
           text: message.text,
-          sender: socket.username,
+          sender: usersData[socket.id].username,
           datetime: message.datetime,
         });
         socket.emit('new message success', {
