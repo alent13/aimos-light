@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"user",
+				"usersData"
+			],
+			[
 				"s",
 				"send"
 			],
@@ -22,10 +26,6 @@
 			[
 				"me",
 				"message"
-			],
-			[
-				"user",
-				"username"
 			],
 			[
 				"us",
@@ -403,6 +403,15 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "server.js",
+			"settings":
+			{
+				"buffer_size": 4189,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -591,7 +600,7 @@
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 40.0
 	},
 	"find_in_files":
 	{
@@ -605,6 +614,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"socket.us",
 			"json",
 			"logo",
 			"StartAngleDegrees",
@@ -630,8 +640,39 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "server.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4189,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1081,
+								1195
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 365.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],

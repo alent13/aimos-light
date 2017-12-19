@@ -44,6 +44,8 @@ var usersData = {};
 io.on('connection', function (socket) {
   console.log('on connection')
 
+  usersData[socket.id] = {};
+
   usersData[socket.id].isUserAuth = false;
 
   socket.on('user auth', function (data) {
