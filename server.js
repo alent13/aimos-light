@@ -70,11 +70,11 @@ io.on('connection', function (socket) {
           console.log('on user auth find error - ' + err)
           socket.emit('auth failed', err);
         }
-        console.log('on user auth find - ' + JSON.stringify(userRecord))
         numUsers++;
         usersData[socket.id].isUserAuth = true;
         usersData[socket.id].username = userRecord.username;
         console.log('on user auth find username - ' + userRecord.username)
+        console.log('on user auth find set username - ' + usersData[socket.id].username)
         MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
           console.log('on user auth message err - ' + err)
           console.log('on user auth message find - ' + JSON.stringify(messages))
@@ -114,6 +114,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('new message', function (data) {
+    console.log('on new message user - ' + usersData[socket.id].username)
     console.log('on new message - ' + JSON.stringify(data))
     var message = new MessageModel(
     {
