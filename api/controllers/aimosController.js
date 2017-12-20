@@ -46,7 +46,8 @@ const uuidv4 = require('uuid/v4');
                 lastName: userRecord.lastName,
                 token: userRecord.token,
               }
-              res.status(200).json(user);
+              res.status(200);
+              res.json(user);
             });
           } else {
             res.status(403);
@@ -72,14 +73,21 @@ const uuidv4 = require('uuid/v4');
 
     User.find({username : req.body.username}, function (err, docs) {
       if (err) {
+        console.log('REG: user find error')
         res.status(405);
         res.send(err);
       }
       if (docs.length){
+        console.log('Username(' + docs[0].username + ') already exists')
         res.status(402);
         res.send('Username already exists');
       }else{
         bcrypt.hash(req.body.password, saltRounds, function(err, hash) {
+          if (err) {
+            console.log('REG: hash error')
+            res.status(405);
+            res.send(err);
+          }
           var newUser = new User(
           {
             username: req.body.username, 
@@ -90,20 +98,24 @@ const uuidv4 = require('uuid/v4');
           });
           newUser.save(function(err){
             if (err) {
-              res.status(405).send(err);
+              console.log('User save error')
+              console.log(err)
+              res.status(405);
+              res.send(err);
             } else {
+              console.log('User save success')
               var user = {
                 username: newUser.username,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
-                token: token,
+                token: newUser.token,
               }
-              res.status(200).json(user);
+              res.status(200);
+              res.json(user);
             }
           });
         });
       }
-      res.status(405).send("Black hole, again");
     });
   };
 
