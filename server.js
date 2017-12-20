@@ -52,6 +52,9 @@ io.on('connection', function (socket) {
   userList = usersData.map(function(item) {
     return item['username'];
   });
+  userList = Object.keys(usersData).map(function(key, index) {
+    return usersData[key]['username'];
+  });
 
   socket.on('user auth', function (data) {
     console.log('on user auth - ' + JSON.stringify(data))
