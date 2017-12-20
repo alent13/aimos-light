@@ -75,38 +75,40 @@ io.on('connection', function (socket) {
           console.log('on user auth find error - ' + err)
           socket.emit('auth failed', err);
         }
-        numUsers++;
-        socket.isUserAuth = true;
-        usersData[socket.id].username = userRecord.username;
-        usersData[socket.id].isAdmin = userRecord.isAdmin;
-        console.log('on user auth find username - ' + userRecord.username)
-        console.log('on user auth find set username - ' + usersData[socket.id].username)
-        MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
-          userList = Object.keys(usersData).map(function(key, index) {
-            return usersData[key]['username'];
-          });
+        if (userRecord) {
+          numUsers++;
+          socket.isUserAuth = true;
+          usersData[socket.id].username = userRecord.username;
+          usersData[socket.id].isAdmin = userRecord.isAdmin;
+          console.log('on user auth find username - ' + userRecord.username)
+          console.log('on user auth find set username - ' + usersData[socket.id].username)
+          MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+            userList = Object.keys(usersData).map(function(key, index) {
+              return usersData[key]['username'];
+            });
 
-          console.log('on user auth message err - ' + err)
-          console.log('on user auth message find - ' + JSON.stringify(messages))
-          var messageList = messages.map(function(messageRecord) {
-            return {
-              text: messageRecord.text,
-              sender: messageRecord.sender,
-              datetime: messageRecord.datetime,
-            };
+            console.log('on user auth message err - ' + err)
+            console.log('on user auth message find - ' + JSON.stringify(messages))
+            var messageList = messages.map(function(messageRecord) {
+              return {
+                text: messageRecord.text,
+                sender: messageRecord.sender,
+                datetime: messageRecord.datetime,
+              };
+            });
+            console.log('on user auth message find list - ' + JSON.stringify(messageList))
+            socket.emit('auth success', {
+              numUsers: numUsers,
+              messageList: messageList,
+              userList: userList,
+            });
+            socket.broadcast.emit('user joined', {
+              username: usersData[socket.id].username,
+              numUsers: numUsers,
+              userList: userList,
+            });
           });
-          console.log('on user auth message find list - ' + JSON.stringify(messageList))
-          socket.emit('auth success', {
-            numUsers: numUsers,
-            messageList: messageList,
-            userList: userList,
-          });
-          socket.broadcast.emit('user joined', {
-            username: usersData[socket.id].username,
-            numUsers: numUsers,
-            userList: userList,
-          });
-        });
+        }
       });
     }
   });
