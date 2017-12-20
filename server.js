@@ -49,9 +49,6 @@ io.on('connection', function (socket) {
 
   socket.isUserAuth = false;
 
-  userList = usersData.map(function(item) {
-    return item['username'];
-  });
   userList = Object.keys(usersData).map(function(key, index) {
     return usersData[key]['username'];
   });
@@ -85,8 +82,8 @@ io.on('connection', function (socket) {
         console.log('on user auth find username - ' + userRecord.username)
         console.log('on user auth find set username - ' + usersData[socket.id].username)
         MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
-          userList = usersData.map(function(item) {
-            return item['username'];
+          userList = Object.keys(usersData).map(function(key, index) {
+            return usersData[key]['username'];
           });
 
           console.log('on user auth message err - ' + err)
@@ -120,8 +117,8 @@ io.on('connection', function (socket) {
       delete usersData[socket.id];
       --numUsers;
 
-      userList = usersData.map(function(item) {
-        return item['username'];
+      userList = Object.keys(usersData).map(function(key, index) {
+        return usersData[key]['username'];
       });
 
       // echo globally that this client has left
