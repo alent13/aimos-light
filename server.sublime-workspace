@@ -407,7 +407,7 @@
 			"file": "server.js",
 			"settings":
 			{
-				"buffer_size": 4189,
+				"buffer_size": 4307,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			}
@@ -600,7 +600,7 @@
 	],
 	"find":
 	{
-		"height": 40.0
+		"height": 23.0
 	},
 	"find_in_files":
 	{
@@ -649,15 +649,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 4189,
+						"buffer_size": 4307,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1081,
-								1195
+								3536,
+								3536
 							]
 						],
 						"settings":
@@ -667,7 +667,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 365.0,
+						"translation.y": 1415.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

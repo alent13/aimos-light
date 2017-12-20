@@ -131,7 +131,7 @@ io.on('connection', function (socket) {
           datetime: message.datetime,
         });
         socket.emit('new message success', {
-          sender: message.username,
+          sender: message.sender,
           text: message.text,
           datetime: message.datetime,
         });
