@@ -116,6 +116,8 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function () {
     console.log('on disconnect')
     if (socket.isUserAuth) {
+      var tmpUsername = usersData[socket.id].username;
+
       delete usersData[socket.id];
       --numUsers;
 
@@ -125,7 +127,7 @@ io.on('connection', function (socket) {
 
       // echo globally that this client has left
       socket.broadcast.emit('user left', {
-        username: usersData[socket.id].username,
+        username: tmpUsername,
         numUsers: numUsers,
         userList: userList,
       });
