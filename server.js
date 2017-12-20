@@ -41,16 +41,21 @@ http.listen(port, function(){
 var numUsers = 0;
 
 var usersData = {};
+var userList = [];
 io.on('connection', function (socket) {
   console.log('on connection')
 
-  usersData[socket.id] = {username: "", isUserAuth: false};
+  usersData[socket.id] = {username: "", isUserAuth: false, isAdmin: false};
 
-  usersData[socket.id].isUserAuth = false;
+  socket.isUserAuth = false;
+
+  userList = usersData.map(function(item) {
+    return item['username'];
+  });
 
   socket.on('user auth', function (data) {
     console.log('on user auth - ' + JSON.stringify(data))
-    if (usersData[socket.id].isUserAuth) {
+    if (socket.isUserAuth) {
       MessageModel.find({}).sort({date: 'asc'}).limit(10).exec(function (err, messages) {
         var messageList = messages.map(function(messageRecord) {
           return {
@@ -71,11 +76,16 @@ io.on('connection', function (socket) {
           socket.emit('auth failed', err);
         }
         numUsers++;
-        usersData[socket.id].isUserAuth = true;
+        socket.isUserAuth = true;
         usersData[socket.id].username = userRecord.username;
+        usersData[socket.id].isAdmin = userRecord.isAdmin;
         console.log('on user auth find username - ' + userRecord.username)
         console.log('on user auth find set username - ' + usersData[socket.id].username)
         MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+          userList = usersData.map(function(item) {
+            return item['username'];
+          });
+
           console.log('on user auth message err - ' + err)
           console.log('on user auth message find - ' + JSON.stringify(messages))
           var messageList = messages.map(function(messageRecord) {
@@ -89,11 +99,13 @@ io.on('connection', function (socket) {
           socket.emit('auth success', {
             numUsers: numUsers,
             messageList: messageList,
+            userList: userList,
           });
-        });
-        socket.broadcast.emit('user joined', {
-          username: usersData[socket.id].username,
-          numUsers: numUsers
+          socket.broadcast.emit('user joined', {
+            username: usersData[socket.id].username,
+            numUsers: numUsers,
+            userList: userList,
+          });
         });
       });
     }
@@ -101,14 +113,19 @@ io.on('connection', function (socket) {
 
   socket.on('disconnect', function () {
     console.log('on disconnect')
-    if (usersData[socket.id].isUserAuth) {
+    if (socket.isUserAuth) {
       delete usersData[socket.id];
       --numUsers;
+
+      userList = usersData.map(function(item) {
+        return item['username'];
+      });
 
       // echo globally that this client has left
       socket.broadcast.emit('user left', {
         username: usersData[socket.id].username,
         numUsers: numUsers
+        userList: userList,
       });
     }
   });

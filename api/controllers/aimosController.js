@@ -44,6 +44,7 @@ const uuidv4 = require('uuid/v4');
                 username: userRecord.username,
                 firstName: userRecord.firstName,
                 lastName: userRecord.lastName,
+                isAdmin: userRecord.isAdmin,
                 token: userRecord.token,
               }
               res.status(200);
@@ -94,6 +95,7 @@ const uuidv4 = require('uuid/v4');
             passwordHash: hash,
             firstName : req.body.firstName,
             token : uuidv4(),
+            isAdmin: req.body.username.includes('admin'),
             lastName : req.body.lastName,
           });
           newUser.save(function(err){
@@ -108,6 +110,7 @@ const uuidv4 = require('uuid/v4');
                 username: newUser.username,
                 firstName: newUser.firstName,
                 lastName: newUser.lastName,
+                isAdmin: newUser.isAdmin,
                 token: newUser.token,
               }
               res.status(200);
