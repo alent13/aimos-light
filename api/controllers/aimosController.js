@@ -26,7 +26,7 @@ const uuidv4 = require('uuid/v4');
       'Expires': new Date().toUTCString()
     });
     res.end(html);
-  }
+  };
 
   exports.user_auth = function(req, res) {
     if (!req.body.username) {

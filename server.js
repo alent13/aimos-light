@@ -82,7 +82,7 @@ io.on('connection', function (socket) {
           usersData[socket.id].isAdmin = userRecord.isAdmin;
           console.log('on user auth find username - ' + userRecord.username)
           console.log('on user auth find set username - ' + usersData[socket.id].username)
-          MessageModel.find({}).sort('-date').limit(10).exec(function (err, messages) {
+          MessageModel.find({}).sort('+date').limit(10).exec(function (err, messages) {
             userList = Object.keys(usersData).map(function(key, index) {
               return usersData[key]['username'];
             });
