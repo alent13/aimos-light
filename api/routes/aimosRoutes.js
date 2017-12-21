@@ -4,6 +4,9 @@ var path = require('path');
 module.exports = function(app) {
 	var aimos = require('../controllers/aimosController');
 
+	app.route('/helloworld')
+	.get(helloworld);
+
 	// user Routes
 	app.route('/user/auth')
 	.post(aimos.user_auth);

@@ -17,6 +17,19 @@ const uuidv4 = require('uuid/v4');
   405 - server runtime error
   */
 
+  exports.helloworld = function(req, res) {
+    var html = '<!DOCTYPE html>'
+    + '<html><header>PaaSEx</header><body><h1 align = "center">' 
+    + body + '</h1></body></html>';
+
+    res.writeHead(200, {
+      'Content-Type': 'text/html',
+      'Content-Length': html.length,
+      'Expires': new Date().toUTCString()
+    });
+    res.end(html);
+  }
+
   exports.user_auth = function(req, res) {
     if (!req.body.username) {
       res.status(401);
