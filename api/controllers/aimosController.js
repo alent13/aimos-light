@@ -18,9 +18,7 @@ const uuidv4 = require('uuid/v4');
   */
 
   exports.helloworld = function(req, res) {
-    var html = '<!DOCTYPE html>'
-    + '<html><header>PaaSEx</header><body><h1 align = "center">' 
-    + body + '</h1></body></html>';
+    var html = '<!DOCTYPE html><html><body><h1>Hello, World!</h1></body></html>';
 
     res.writeHead(200, {
       'Content-Type': 'text/html',
